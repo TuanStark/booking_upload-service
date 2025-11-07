@@ -3,10 +3,7 @@ import { UploadsModule } from './uploads/uploads.module';
 import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
-    UploadsModule
-  ],
+  imports: [ConfigModule.forRoot({ isGlobal: true }), UploadsModule],
   controllers: [],
   providers: [],
 })

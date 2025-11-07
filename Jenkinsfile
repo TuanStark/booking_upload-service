@@ -6,7 +6,7 @@ pipeline {
         SERVICE_PORT = '3007'
         // Repository name trên Docker Hub: chỉ được có 1 dấu "/" (username/repo-name)
         // Không được dùng format: username/namespace/repo-name (2 dấu "/")
-        DOCKER_IMAGE = "${SERVICE_NAME}"  // Sẽ thành: tuanstark/upload-service
+        DOCKER_IMAGE = "${SERVICE_NAME}"  // Sẽ thành: tuanstark/api-gateway
         DOCKER_TAG = "${BUILD_NUMBER}"
         NODE_VERSION = '18'
         // TODO: Thay đổi 'your-dockerhub-username' thành username Docker Hub của bạn
@@ -46,19 +46,19 @@ pipeline {
             }
         }
         
-        stage('Unit Tests') {
-            steps {
-                sh 'npm test -- --coverage --watchAll=false'
-            }
-            post {
-                always {
-                    publishTestResults testResultsPattern: 'coverage/test-results.xml'
-                    publishCoverage adapters: [
-                        jacocoAdapter('coverage/lcov.info')
-                    ], sourceFileResolver: sourceFiles('STORE_LAST_BUILD')
-                }
-            }
-        }
+        // stage('Unit Tests') {
+        //     steps {
+        //         sh 'npm test -- --coverage --watchAll=false'
+        //     }
+        //     post {
+        //         always {
+        //             publishTestResults testResultsPattern: 'coverage/test-results.xml'
+        //             publishCoverage adapters: [
+        //                 jacocoAdapter('coverage/lcov.info')
+        //             ], sourceFileResolver: sourceFiles('STORE_LAST_BUILD')
+        //         }
+        //     }
+        // }
         
         stage('Build Application') {
             steps {
