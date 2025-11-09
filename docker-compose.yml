@@ -4,7 +4,7 @@ services:
   upload-service:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     container_name: upload-service-dev
     ports:
       - "3009:3009"
@@ -13,14 +13,12 @@ services:
       CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME}
       CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY}
       CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET}
-      NODE_ENV: development
     volumes:
-      - ./src:/app/src
-      - ./node_modules:/app/node_modules
-    command: npm run start:dev
+      - .:/app
+      - /app/node_modules
     networks:
       my_custom_network:
-        ip4_address: ${APP_IP}
+        ipv4_address: ${APP_IP}
 
 networks:
   my_custom_network:
