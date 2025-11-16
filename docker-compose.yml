@@ -4,7 +4,7 @@ services:
   upload-service:
     build:
       context: .
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
     container_name: upload-service-dev
     ports:
       - "3009:3009"
