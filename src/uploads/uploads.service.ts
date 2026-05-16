@@ -5,7 +5,7 @@ import {
   UploadApiResponse,
 } from 'cloudinary';
 import * as streamifier from 'streamifier';
-
+import sharp from 'sharp';
 @Injectable()
 export class UploadService {
   constructor() {
@@ -19,18 +19,28 @@ export class UploadService {
   async uploadImage(
     file: Express.Multer.File,
   ): Promise<UploadApiResponse | UploadApiErrorResponse> {
-    return new Promise((resolve, reject) => {
-      const uploadStream = cloudinary.uploader.upload_stream(
-        { folder: 'booking-app' },
-        (error, result) => {
-          if (error) return reject(error);
-          if (!result)
-            return reject(new Error('Upload failed, no result returned'));
-          resolve(result);
-        },
-      );
-      streamifier.createReadStream(file.buffer).pipe(uploadStream);
-    });
+    try {
+      // Optimize image before uploading: resize to max 1920px width and convert to WebP
+      const optimizedBuffer = await sharp(file.buffer)
+        .resize({ width: 1920, withoutEnlargement: true })
+        .webp({ quality: 80 })
+        .toBuffer();
+
+      return new Promise((resolve, reject) => {
+        const uploadStream = cloudinary.uploader.upload_stream(
+          { folder: 'booking-app' },
+          (error, result) => {
+            if (error) return reject(error);
+            if (!result)
+              return reject(new Error('Upload failed, no result returned'));
+            resolve(result);
+          },
+        );
+        streamifier.createReadStream(optimizedBuffer).pipe(uploadStream);
+      });
+    } catch (error) {
+      throw new HttpException(`Image optimization failed: ${error.message}`, 500);
+    }
   }
 
   async deleteImage(publicId: string): Promise<{ message: string }> {
